@@ -1,15 +1,16 @@
 const express = require("express");
 require("dotenv").config;
+const app = express();
+const path = require("path");
 const db = require("./db");
+app.use(express.json());
+
 const otherRoutes = require("./routes/otherRoutes");
 const pizzaRoutes = require("./routes/pizzaRoutes");
 const userRoutes = require("./routes/userRoute");
 const oderRoutes = require("./routes/orderRoute");
 const deliveryPartnerRoutes = require("./routes/deliveryPartnerRoute");
-const app = express();
-const path = require("path");
 
-app.use(express.json());
 app.use("/api/pizza/", pizzaRoutes);
 app.use("/api/others/", otherRoutes);
 app.use("/api/user/", userRoutes);
