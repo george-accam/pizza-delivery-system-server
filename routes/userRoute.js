@@ -4,11 +4,17 @@ const User = require("../models/userModel");
 
 router.post("/register", (req, res) => {
   const { username, email, password } = req.body;
+
+  let admin = false;
+
+  if (email.endsWith("@admin.com")) {
+    admin = true;
+  }
   const newUser = User({
     username: username,
     email: email,
     password: password,
-    isAdmin: false,
+    isAdmin: admin,
   });
   console.log(newUser);
 
