@@ -2,31 +2,44 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/userModel");
 
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
-  let admin = false;
+  try {
+    // Check if user already exists
+    const checkExist = await User.findOne({ email });
 
-  if (email.endsWith("@admin.com")) {
-    admin = true;
-  }
-  const newUser = User({
-    username: username,
-    email: email,
-    password: password,
-    isAdmin: admin,
-  });
-  console.log(newUser);
+    if (checkExist) {
+      return res.status(400).send({ message: "User already exists." });
+    }
 
-  newUser
-    .save()
-    .then((result) => {
-      res.send("Registered successfully");
-    })
-    .catch((error) => {
-      return res.status(404).json({ message: error });
+    // Check if the email ends with @admin.com
+    let admin = false;
+    if (email.endsWith("@admin.com")) {
+      admin = true;
+    }
+
+    // Create a new user
+    const newUser = new User({
+      username: username,
+      email: email,
+      password: password,
+      isAdmin: admin,
     });
+
+    console.log(newUser);
+
+    // Save the new user
+    const savedUser = await newUser.save();
+
+    // Respond with success message
+    res.status(201).send({ message: "Registered successfully", user: savedUser });
+  } catch (error) {
+    // Handle server error
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
 });
+
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
